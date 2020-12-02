@@ -47,8 +47,20 @@ local pillar_opt = {
     }
 }
 
+local health_opt = {
+    frames = {
+        {x = 120, y = 40, width = 624, height = 148},
+        {x = 120, y = 226, width = 624, height = 148},
+        {x = 120, y = 410, width = 624, height = 148},
+        {x = 120, y = 595, width = 624, height = 148},
+        {x = 120, y = 782, width = 624, height = 148},
+        {x = 116, y = 966, width = 628, height = 144},
+    },
+}
+
 local ship_sheet = graphics.newImageSheet("ships_transparent.png", ship_opt)
 local enemy_sheet = graphics.newImageSheet("ships_transparent.png", enemy_opt)
+local health_sheet = graphics.newImageSheet("healthbar.png", health_opt)
 
 local ship_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
@@ -58,9 +70,15 @@ local enemy_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
 }
 
+local health_sequenceData = {
+    {name = "health_decrease", frames = {1,2,3,4,5,6}, time = 800, loopCount = 0}
+}
+
 local player = display.newSprite(ship_sheet, ship_sequenceData) --initialize ship sprite
 player.tag = "player"
 player.HP = 10;
+
+local bar = display.newSprite(health_sheet, health_sequenceData)
 
 local function switchScene(event) -- Change scenes
 
@@ -271,6 +289,12 @@ elements.anchorY = 1
 elements.x = 0
 elements.y = 0
 sceneGroup:insert(elements)
+
+bar:scale(0.5, 0.5)
+bar.x = 200
+bar.y = 50
+bar:setFrame(6)
+sceneGroup:insert(bar);
 
 end
  
