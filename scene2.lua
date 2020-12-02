@@ -78,7 +78,7 @@ end
 local bar = display.newSprite(health_sheet, health_sequenceData)
 
 local function showHealth(event)
-    print(player.HP)
+    --print(player.HP)
     --bar:setSequence("health_decrease")
     if(player.HP < 10 and player.HP > 8) then
         bar:setFrame(5)
@@ -96,12 +96,12 @@ player:addEventListener("collision", showHealth)
 
 
 
-local enemies = {}; -- place to store the enemies
-local function createEnemy (yPos, id)
+enemies = {}; -- place to store the enemies
+local function createEnemy ()
     id = 1
     numEnemies = numEnemies +1 
     yPos = math.random(display.contentCenterY - 200, display.contentCenterY + 200)
-    local enemy = display.newSprite(enemy_sheet, enemy_sequenceData);  --enemy sprite data
+    enemy = display.newSprite(enemy_sheet, enemy_sequenceData);  --enemy sprite data
     enemy.x= 1000
     enemy.y = yPos
 	--enemy:setFillColor(0,1,0);
@@ -117,11 +117,14 @@ local function createEnemy (yPos, id)
     
     local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
     print("shoot")
-    local ebullet = display.newCircle(enemies[id].x-40, enemies[id].y, 5);
+    print(numEnemies)
+    for i=1,id do
+    ebullet = display.newCircle(enemies[id].x-40, enemies[id].y, 5);
     physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
     ebullet:setFillColor(1,0,0);
     ebullet:setLinearVelocity( -200, 0 )
     ebullet.tag = "enemyProj"
+    end
     end
         if(numEnemies >= 1) then
         timer.performWithDelay(2000, enemyProjectile, -1)
@@ -133,17 +136,18 @@ timer.performWithDelay( 5000, createEnemy, -1)
 
 
 local function fire (event) -- handles player firing
-    local bullet = display.newCircle(player.x+40, player.y, 5);
+    
+    local bullet = display.newCircle(player.x+100, player.y, 5);
     bullet:setFillColor(0,1,0);
     physics.addBody(bullet, "kinematic", {radius=5} );
     bullet.isBullet = true
     bullet:setLinearVelocity( 200, 0 )
 
-    local function removeProjectile(event) --removes projectile on collision
+    local function removeProjectile(event) --Had to put this function inside of the fire function becuase the listener couldnt access the bullet object for some reason.
         if (event.phase=="began") then
-            print("collision")
-        --event.target:removeSelf();
-        --event.target=nil;
+        print("collision")
+        event.target:removeSelf();
+        event.target=nil;
 
         if (event.other.tag == "enemy") then
 			 	
@@ -239,9 +243,10 @@ end
 local addColumnTimer = timer.performWithDelay(1000, addColumns, -1)
 local moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
 
-local function onObjectTouch(event)
+local function boostPlayer(event)
     if event.phase == "began" then
     player:applyLinearImpulse(0, -60, player.x, player.y)
+    player.x = display.contentCenterX - 400
         --print("boost")
            
     end
@@ -256,7 +261,7 @@ bar:scale(0.5, 0.5)
 bar.x = 200
 bar.y = 50
 bar:setFrame(6)
---sceneGroup:insert(bar);
+sceneGroup:insert(bar);
        --sceneGroup:insert(enemy)
 
 local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
@@ -266,23 +271,28 @@ sceneGroup:insert(background)
 
                                                             --invisible button to allow user to shoot
 local flyButton = display.newRect( 334, 375, 667, 750)
-flyButton:setFillColor(0,1,0, 0.01) --opacity set nearly to 0 to make invisible
+flyButton:setFillColor(0,1,0, 0.01 ) --opacity set nearly to 0 to make invisible
 local buttontext2 = display.newText( "Shoot", 800, 700, native.systemFont, 16 )
 sceneGroup:insert(flyButton)
 sceneGroup:insert(buttontext2)
-flyButton:addEventListener( "touch", onObjectTouch )
+flyButton:addEventListener( "touch", boostPlayer )
 
 local shootButton = display.newRect( 1000, 375, 667, 750)
-shootButton:setFillColor(0,0,1, 0.01) --opacity set nearly to 0 to make invisible
+shootButton:setFillColor(0,0,1, 0.01 ) --opacity set nearly to 0 to make invisible
 local shootButtontext = display.newText( "fly", 100, 700, native.systemFont, 16 )
 sceneGroup:insert(shootButton)
 sceneGroup:insert(shootButtontext)
-shootButton:addEventListener( "tap", fire)
+shootButton:addEventListener( "touch", fire)
 
 
 local ground = display.newRect(display.contentCenterX, display.contentCenterY + 380, 1500, 1) -- Adds a ground object to stop the ship from falling off screen
 ground:setFillColor(0,0,0)
 physics.addBody( ground, "static", { density=1.0, friction=0, bounce=0, isSensor = false } )
+
+local ceiling = display.newRect(display.contentCenterX, display.contentCenterY -380, 1500, 1) -- Adds a ceiling object to stop the ship from going above map
+ceiling:setFillColor(0,0,0)
+physics.addBody( ceiling, "static", { density=1.0, friction=0, bounce=0, isSensor = false } )
+
  
 local button1 = display.newRect( 300, 700, 100, 75)
 button1:setFillColor(0,1,0)

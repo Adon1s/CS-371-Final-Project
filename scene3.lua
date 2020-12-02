@@ -9,15 +9,21 @@ local scene = composer.newScene()
 -- local forward references should go here
  
 ---------------------------------------------------------------------------------
- 
+
+local function switchScene(event) -- Change scenes
+
+      composer.gotoScene("scene1") --Title Screen
+end 
+
+
 -- "scene:create()"
 function scene:create( event )
  
    local sceneGroup = self.view
  
-local button1 = display.newRect( 300, 1200, 100, 75)
+local button1 = display.newRect( 300, 700, 100, 75)
 button1:setFillColor(0,1,0)
-local buttontext1 = display.newText( "End Game", 300, 1200, native.systemFont, 16 )
+local buttontext1 = display.newText( "End Game", 300, 700, native.systemFont, 16 )
 sceneGroup:insert(button1)
 sceneGroup:insert(buttontext1)
 button1:addEventListener( "tap", switchScene )
