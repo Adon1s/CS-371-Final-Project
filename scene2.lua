@@ -10,7 +10,15 @@ local physics = require( "physics" )
 -- local forward references should go here
  
 ---------------------------------------------------------------------------------
-physics.start() --start physics here
+
+-- "scene:create()"
+function scene:create( event )
+
+       local sceneGroup = self.view
+
+       --sceneGroup:insert(enemy)
+
+       physics.start() --start physics here
 physics.setGravity( 0, 15 )
 
 local numEnemies = 0
@@ -59,10 +67,9 @@ local function switchScene(event) -- Change scenes
       composer.gotoScene("scene1") --Title Screen
 end 
 
-
 local enemies = {}; -- place to store the enemies
+local enemies_reverse = {}; -- store reverse of key/value for enemies
 local function createEnemy (yPos, id)
-    id = 1
     numEnemies = numEnemies +1 
     yPos = math.random(display.contentCenterY - 200, display.contentCenterY + 200)
     local enemy = display.newSprite(enemy_sheet, enemy_sequenceData);  --enemy sprite data
@@ -74,30 +81,30 @@ local function createEnemy (yPos, id)
 	enemy.tag = "enemy";
     enemy.HP = 3;
     enemy:setLinearVelocity( -100, 0 )
-    --hiddenGroup:insert(enemy)
-    id = id+1  --increment enemy ID
-
-    enemies[id] = enemy;
-    
-    local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
-    print("shoot")
-    local ebullet = display.newCircle(enemies[id].x-40, enemies[id].y, 5);
-    physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
-    ebullet:setFillColor(1,0,0);
-    ebullet:setLinearVelocity( -200, 0 )
-    ebullet.tag = "enemyProj"
-    end
-        if(numEnemies >= 1) then
-        timer.performWithDelay(2000, enemyProjectile, -1)
-        end
+    sceneGroup:insert(enemy)
+    table.insert(enemies, enemy)
+    for k,v in pairs(enemies) do enemies_reverse[v]=k end;
 end
 
-timer.performWithDelay( 5000, createEnemy, -1)
---timer.performWithDelay(6000, enemyProjectile, -1)
+local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
+    print("shoot")
+    for k, enemy in ipairs(enemies) do
+        if enemy.x ~= nil then
+            local ebullet = display.newCircle(enemy.x-40, enemy.y, 5);
+            physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
+            ebullet:setFillColor(1,0,0);
+            ebullet:setLinearVelocity( -200, 0 )
+            ebullet.tag = "enemyProj"
+        end
+    end
+end
+
+createEnemyTimer = timer.performWithDelay( 5000, createEnemy, -1)
+enemyShootTimer = timer.performWithDelay( 2000, enemyProjectile, -1)
 
 
 local function fire (event) -- handles player firing
-    local bullet = display.newCircle(player.x+40, player.y, 5);
+    local bullet = display.newCircle(player.x+80, player.y, 5);
     bullet:setFillColor(0,1,0);
     physics.addBody(bullet, "kinematic", {radius=5} );
     bullet.isBullet = true
@@ -118,6 +125,7 @@ local function fire (event) -- handles player firing
 				elseif (event.other.HP == 1) then
                     audio.play(soundTable['explodeSound']);
                     numEnemies = numEnemies -1
+                    table.remove(enemies, enemies_reverse[event.other])
                     event.other:removeSelf(); 
                     event.other=nil;
 
@@ -126,6 +134,14 @@ local function fire (event) -- handles player firing
         end
     end
     bullet:addEventListener("collision", removeProjectile)
+end
+
+local function onObjectTouch(event)
+    if event.phase == "began" then
+    player:applyLinearImpulse(0, -60, player.x, player.y)
+        --print("boost")
+           
+    end
 end
 
 local function playerHealth(event)
@@ -142,6 +158,11 @@ local function playerHealth(event)
                     event.other=nil;
 					audio.play(soundTable['explodeSound']);
                     print("destroyed")
+                    timer.cancel(enemyShootTimer);
+                    timer.cancel(createEnemyTimer);
+                    timer.cancel(addColumnTimer);
+                    timer.cancel(moveColumnTimer);
+                    composer.removeScene("scene2");
                     composer.gotoScene("deathScene")
             end
     end
@@ -200,24 +221,8 @@ local function addColumns()
 
 end	
 
-local addColumnTimer = timer.performWithDelay(1000, addColumns, -1)
-local moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
-
-local function onObjectTouch(event)
-    if event.phase == "began" then
-    player:applyLinearImpulse(0, -60, player.x, player.y)
-        --print("boost")
-           
-    end
-end
-
-
--- "scene:create()"
-function scene:create( event )
-
-       local sceneGroup = self.view
-
-       --sceneGroup:insert(enemy)
+addColumnTimer = timer.performWithDelay(1000, addColumns, -1)
+moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
 
 local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
 background.x = display.contentCenterX
@@ -300,10 +305,12 @@ end
 function scene:destroy( event )
  
    local sceneGroup = self.view
-    physics.stop()
+   physics.stop()
    -- Called prior to the removal of scene's view ("sceneGroup").
    -- Insert code here to clean up the scene.
    -- Example: remove display objects, save state, etc.
+   print("hello wtf")
+   --for k, v in pairs(enemies) do v = nil end
 end
  
 ---------------------------------------------------------------------------------
