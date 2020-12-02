@@ -110,20 +110,24 @@ local function createEnemy ()
 	enemy.tag = "enemy";
     enemy.HP = 3;
     enemy:setLinearVelocity( -100, 0 )
-    --hiddenGroup:insert(enemy)
+    
     id = id+1  --increment enemy ID
+    
 
     enemies[id] = enemy;
+    
+    
     
     local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
     print("shoot")
     print(numEnemies)
     for i=1,id do
-    ebullet = display.newCircle(enemies[id].x-40, enemies[id].y, 5);
+    ebullet = display.newCircle(enemies[id].x or 0, enemies[id].y or 0, 5);
     physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
     ebullet:setFillColor(1,0,0);
     ebullet:setLinearVelocity( -200, 0 )
     ebullet.tag = "enemyProj"
+    
     end
     end
         if(numEnemies >= 1) then
@@ -159,6 +163,7 @@ local function fire (event) -- handles player firing
                     audio.play(soundTable['explodeSound']);
                     numEnemies = numEnemies -1
                     event.other:removeSelf(); 
+                    
                     event.other=nil;
 
 				end
@@ -182,7 +187,9 @@ local function playerHealth(event)
                     event.other=nil;
 					audio.play(soundTable['explodeSound']);
                     print("destroyed")
+                    
                     composer.gotoScene("deathScene")
+                    
             end
     end
     --[[if(event.other.tag == "topColumn" or event.other.tag == "bottomColumn") then
@@ -218,14 +225,14 @@ end
 
 local function addColumns()
 	
-	height = math.random(display.contentCenterY - 200, display.contentCenterY + 200)
+	height = math.random(display.contentCenterY - 100, display.contentCenterY + 100)
 
     local topColumn = display.newImageRect('column.png',300,714)
     topColumn.tag = "topColumn"
 	topColumn.anchorX = 0.5
 	topColumn.anchorY = 1
 	topColumn.x = display.contentWidth + 100
-	topColumn.y = height - 160
+	topColumn.y = height - 300
 	physics.addBody(topColumn, "static", {density=1, bounce=0.1, friction=.2, isSensor= true})
 	elements:insert(topColumn)
 	
@@ -234,14 +241,26 @@ local function addColumns()
 	bottomColumn.anchorX = 0.5
 	bottomColumn.anchorY = 0
 	bottomColumn.x = display.contentWidth + 100
-	bottomColumn.y = height + 160
+	bottomColumn.y = height + 200
 	physics.addBody(bottomColumn, "static", {density=1, bounce=0.1, friction=.2, isSensor= true})
 	elements:insert(bottomColumn)
 
 end	
 
+local score = 0
+local scoreCount = display.newText("Score: 0", 500, 50, native.systemFont, 50)
+local function scoreUp()
+    score = score + 10
+    scoreCount.text = "Score: " .. score
+end
+
+
+
+
 local addColumnTimer = timer.performWithDelay(1000, addColumns, -1)
 local moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
+local addScore = timer.performWithDelay(1000, scoreUp, 300)
+
 
 local function boostPlayer(event)
     if event.phase == "began" then
@@ -261,8 +280,9 @@ bar:scale(0.5, 0.5)
 bar.x = 200
 bar.y = 50
 bar:setFrame(6)
-sceneGroup:insert(bar);
+
        --sceneGroup:insert(enemy)
+
 
 local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
 background.x = display.contentCenterX
@@ -314,6 +334,11 @@ elements.anchorY = 1
 elements.x = 0
 elements.y = 0
 sceneGroup:insert(elements)
+sceneGroup:insert(bar);
+sceneGroup:insert(scoreCount)
+
+
+
 
 end
  

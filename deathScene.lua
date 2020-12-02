@@ -15,7 +15,7 @@ local scene = composer.newScene()
 end
 
 local function menuScene(event) 
-
+      
       composer.gotoScene("scene1") --Help scene
 end
 
