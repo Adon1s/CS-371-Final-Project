@@ -9,19 +9,30 @@ local scene = composer.newScene()
 -- local forward references should go here
  
 ---------------------------------------------------------------------------------
- 
+
+local function switchScene(event) -- Change scenes
+      
+      composer.gotoScene("scene1") --Title Screen
+end 
+
+
 -- "scene:create()"
 function scene:create( event )
  
    local sceneGroup = self.view
  
-local button1 = display.newRect( 300, 1200, 100, 75)
+local button1 = display.newRect( 300, 700, 100, 75)
 button1:setFillColor(0,1,0)
-local buttontext1 = display.newText( "End Game", 300, 1200, native.systemFont, 16 )
+local buttontext1 = display.newText( "End Game", 300, 700, native.systemFont, 16 )
 sceneGroup:insert(button1)
 sceneGroup:insert(buttontext1)
 button1:addEventListener( "tap", switchScene )
-
+local helpText1 = display.newText("Instructions", display.contentCenterX, 100, native.systemFont, 60)
+sceneGroup:insert(helpText1)
+local helpText2 = display.newText("Tap the left side of screen to move ship up gradually", display.contentCenterX, 200, native.systemFont, 35)
+sceneGroup:insert(helpText2)
+local helpText3 = display.newText("Tap the right side of screen, also indicated by the shoot label to fire at enemies", display.contentCenterX, 300, native.systemFont, 35)
+sceneGroup:insert(helpText3)
 end
  
 -- "scene:show()"
