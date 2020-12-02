@@ -43,7 +43,7 @@ local enemy_opt = {
 
 local pillar_opt = {
     frames = {
-        {x = -50, y = 0, width = 47, height = 125}, -- frame 1
+        {x = 51, y = 0, width = 49, height = 124}, -- frame 1
     }
 }
 
@@ -164,6 +164,24 @@ local function onObjectTouch(event)
     end
 end
 
+local function showHealth(event)
+    --print(player.HP)
+    --bar:setSequence("health_decrease")
+    if(player.HP < 10 and player.HP > 8) then
+        bar:setFrame(5)
+    elseif(player.HP < 8 and player.HP > 6) then
+        bar:setFrame(4)
+    elseif(player.HP < 6 and player.HP > 4) then
+        bar:setFrame(3)
+    elseif(player.HP == 4 or player.HP == 3) then
+        bar:setFrame(2)
+    elseif(player.HP < 2) then
+        bar:setFrame(1)
+    end
+end
+
+player:addEventListener("collision", showHealth)
+
 local function playerHealth(event)
     if(event.other.tag == "enemyProj") then
 
@@ -186,18 +204,19 @@ local function playerHealth(event)
                     composer.gotoScene("deathScene")
             end
     end
-    --[[if(event.other.tag == "topColumn" or event.other.tag == "bottomColumn") then
+    if(event.other.tag == "topColumn" or event.other.tag == "bottomColumn") then
 
-        if (player.HP > 1) then
-                    player.HP = player.HP -1;
-                    print("hit")
-					audio.play(soundTable['hitSound']);
-            elseif (player.HP <= 1) then
+       event.other:removeSelf(); 
+                    event.other=nil;
 					audio.play(soundTable['explodeSound']);
                     print("destroyed")
+                    timer.cancel(enemyShootTimer);
+                    timer.cancel(createEnemyTimer);
+                    timer.cancel(addColumnTimer);
+                    timer.cancel(moveColumnTimer);
+                    composer.removeScene("scene2");
                     composer.gotoScene("deathScene")
-        end
-    end--]]
+    end
 
 end
 
