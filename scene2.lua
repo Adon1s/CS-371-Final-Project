@@ -41,12 +41,12 @@ local pillar_opt = {
 
 local health_opt = {
     frames = {
-        {x = 114, y = 40, width = 632, height = 148},
-        {x = 114, y = 226, width = 632, height = 148},
-        {x = 114, y = 410, width = 632, height = 148},
-        {x = 114, y = 595, width = 632, height = 148},
-        {x = 114, y = 779, width = 632, height = 148},
-        {x = 114, y = 964, width = 632, height = 148},
+        {x = 120, y = 40, width = 624, height = 148},
+        {x = 120, y = 226, width = 624, height = 148},
+        {x = 120, y = 410, width = 624, height = 148},
+        {x = 120, y = 595, width = 624, height = 148},
+        {x = 120, y = 782, width = 624, height = 148},
+        {x = 116, y = 966, width = 628, height = 144},
     },
 }
 
@@ -74,23 +74,21 @@ local function switchScene(event) -- Change scenes
 
       composer.gotoScene("scene1") --Title Screen
 end 
+
 local bar = display.newSprite(health_sheet, health_sequenceData)
-bar:scale(0.5, 0.5)
-bar.x,y = 250, 100
-bar:setFrame(6)
 
 local function showHealth(event)
     print(player.HP)
     --bar:setSequence("health_decrease")
-    if(player.HP <= 8) then
+    if(player.HP < 10 and player.HP > 8) then
         bar:setFrame(5)
-    elseif(player.HP <= 6) then
+    elseif(player.HP < 8 and player.HP > 6) then
         bar:setFrame(4)
-    elseif(player.HP <= 4) then
+    elseif(player.HP < 6 and player.HP > 4) then
         bar:setFrame(3)
-    elseif(player.HP <= 3) then
+    elseif(player.HP == 4 or player.HP == 3) then
         bar:setFrame(2)
-    elseif(player.HP <= 2) then
+    elseif(player.HP < 2) then
         bar:setFrame(1)
     end
 end
@@ -254,7 +252,11 @@ end
 function scene:create( event )
 
        local sceneGroup = self.view
-
+bar:scale(0.5, 0.5)
+bar.x = 200
+bar.y = 50
+bar:setFrame(6)
+--sceneGroup:insert(bar);
        --sceneGroup:insert(enemy)
 
 local background = display.newImageRect( "space_background.png", display.contentWidth, display.contentHeight) 
