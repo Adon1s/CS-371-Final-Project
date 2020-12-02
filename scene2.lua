@@ -39,8 +39,20 @@ local pillar_opt = {
     }
 }
 
+local health_opt = {
+    frames = {
+        {x = 114, y = 40, width = 632, height = 148},
+        {x = 114, y = 226, width = 632, height = 148},
+        {x = 114, y = 410, width = 632, height = 148},
+        {x = 114, y = 595, width = 632, height = 148},
+        {x = 114, y = 779, width = 632, height = 148},
+        {x = 114, y = 964, width = 632, height = 148},
+    },
+}
+
 local ship_sheet = graphics.newImageSheet("ships_transparent.png", ship_opt)
 local enemy_sheet = graphics.newImageSheet("ships_transparent.png", enemy_opt)
+local health_sheet = graphics.newImageSheet("healthbar.png", health_opt)
 
 local ship_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
@@ -48,6 +60,10 @@ local ship_sequenceData = {
 
 local enemy_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
+}
+
+local health_sequenceData = {
+    {name = "health_decrease", frames = {1,2,3,4,5,6}, time = 800, loopCount = 0}
 }
 
 local player = display.newSprite(ship_sheet, ship_sequenceData) --initialize ship sprite
@@ -58,6 +74,28 @@ local function switchScene(event) -- Change scenes
 
       composer.gotoScene("scene1") --Title Screen
 end 
+local bar = display.newSprite(health_sheet, health_sequenceData)
+bar:scale(0.5, 0.5)
+bar.x,y = 250, 100
+bar:setFrame(6)
+
+local function showHealth(event)
+    print(player.HP)
+    --bar:setSequence("health_decrease")
+    if(player.HP <= 8) then
+        bar:setFrame(5)
+    elseif(player.HP <= 6) then
+        bar:setFrame(4)
+    elseif(player.HP <= 4) then
+        bar:setFrame(3)
+    elseif(player.HP <= 3) then
+        bar:setFrame(2)
+    elseif(player.HP <= 2) then
+        bar:setFrame(1)
+    end
+end
+player:addEventListener("collision", showHealth)
+
 
 
 local enemies = {}; -- place to store the enemies
