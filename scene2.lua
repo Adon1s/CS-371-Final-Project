@@ -117,7 +117,7 @@ local function createEnemy (yPos, id)
     
     local function enemyProjectile(event)  -- Timer calls function to fire bullets every second
     print("shoot")
-    local ebullet = display.newCircle(enemies[id].x-40, enemies[id].y, 5);
+    local ebullet = display.newCircle(enemies[id].x or 0, enemies[id].y or 0, 5);
     physics.addBody(ebullet, "kinematic", {radius=5, isSensor = true} );
     ebullet:setFillColor(1,0,0);
     ebullet:setLinearVelocity( -200, 0 )
