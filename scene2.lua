@@ -104,36 +104,38 @@ enemyShootTimer = timer.performWithDelay( 2000, enemyProjectile, -1)
 
 
 local function fire (event) -- handles player firing
-    local bullet = display.newCircle(player.x+80, player.y, 5);
-    bullet:setFillColor(0,1,0);
-    physics.addBody(bullet, "kinematic", {radius=5} );
-    bullet.isBullet = true
-    bullet:setLinearVelocity( 200, 0 )
+    if (event.phase == "began") then
+        local bullet = display.newCircle(player.x+80, player.y, 5);
+        bullet:setFillColor(0,1,0);
+        physics.addBody(bullet, "kinematic", {radius=5} );
+        bullet.isBullet = true
+        bullet:setLinearVelocity( 200, 0 )
 
-    local function removeProjectile(event) --removes projectile on collision
-        if (event.phase=="began") then
-            print("collision")
-        --event.target:removeSelf();
-        --event.target=nil;
+        local function removeProjectile(event) --removes projectile on collision
+            if (event.phase=="began") then
+                print("collision")
+            --event.target:removeSelf();
+            --event.target=nil;
 
-        if (event.other.tag == "enemy") then
-			 	
-				if (event.other.HP > 1) then
-					event.other.HP = event.other.HP -1;
-					event.other:setFillColor(event.other.HP/3, 0, 0)
-					audio.play(soundTable['hitSound']);
-				elseif (event.other.HP == 1) then
-                    audio.play(soundTable['explodeSound']);
-                    numEnemies = numEnemies -1
-                    table.remove(enemies, enemies_reverse[event.other])
-                    event.other:removeSelf(); 
-                    event.other=nil;
+            if (event.other.tag == "enemy") then
+                    bullet:removeSelf();
+                    if (event.other.HP > 1) then
+                        event.other.HP = event.other.HP -1;
+                        event.other:setFillColor(event.other.HP/3, 0, 0)
+                        audio.play(soundTable['hitSound']);
+                    elseif (event.other.HP == 1) then
+                        audio.play(soundTable['explodeSound']);
+                        numEnemies = numEnemies -1
+                        table.remove(enemies, enemies_reverse[event.other])
+                        event.other:removeSelf(); 
+                        event.other=nil;
 
-				end
+                    end
+            end
+            end
         end
-        end
+        bullet:addEventListener("collision", removeProjectile)
     end
-    bullet:addEventListener("collision", removeProjectile)
 end
 
 local function onObjectTouch(event)
@@ -242,7 +244,7 @@ shootButton:setFillColor(0,0,1, 0.01) --opacity set nearly to 0 to make invisibl
 local shootButtontext = display.newText( "fly", 100, 700, native.systemFont, 16 )
 sceneGroup:insert(shootButton)
 sceneGroup:insert(shootButtontext)
-shootButton:addEventListener( "tap", fire)
+shootButton:addEventListener( "touch", fire)
 
 
 local ground = display.newRect(display.contentCenterX, display.contentCenterY + 380, 1500, 1) -- Adds a ground object to stop the ship from falling off screen
