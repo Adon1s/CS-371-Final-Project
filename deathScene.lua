@@ -1,39 +1,42 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
-local widget = require('widget')
-
-local function gameScene(event) 
+ 
+---------------------------------------------------------------------------------
+-- All code outside of the listener functions will only be executed ONCE
+-- unless "composer.removeScene()" is called.
+---------------------------------------------------------------------------------
+ 
+-- local forward references should go here
+ 
+---------------------------------------------------------------------------------
+ local function gameScene(event) 
 
       composer.gotoScene("scene2") --Game scene
 end
 
-local function helpScene(event) 
+local function menuScene(event) 
 
-      composer.gotoScene("scene3") --Help scene
+      composer.gotoScene("scene1") --Help scene
 end
+
 
 -- "scene:create()"
 function scene:create( event )
 
 local sceneGroup = self.view
+--composer.removeScene( "scene2")
+local deathText = display.newText( "YOU DIED", display.contentCenterX, display.contentCenterY, native.systemFont, 45 )
+deathText:setFillColor(0,1,0)
+sceneGroup:insert(deathText)
 
-local background = display.newImageRect("logo3.png", 1334, 750)
-background.x = display.contentCenterX
-background.y = display.contentCenterY
-sceneGroup:insert(background)
-
-local start = display.newImageRect("start-up.png", 256, 256)
-start.x = 300
-start.y = 600
-sceneGroup:insert(start)
-start:addEventListener("tap", gameScene)
-
-local help = display.newImageRect("instructions.png", 256, 256)
-help.x = 1000
-help.y = 600
-sceneGroup:insert(help)
-help:addEventListener("tap", helpScene)
-
+local button1 = display.newRect( 300, 700, 100, 75)
+button1:setFillColor(0,1,0)
+local buttontext1 = display.newText( "Restart", 300, 700, native.systemFont, 16 )
+sceneGroup:insert(button1)
+sceneGroup:insert(buttontext1)
+button1:addEventListener( "tap", menuScene )
+   -- Initialize the scene here.
+   -- Example: add display objects to "sceneGroup", add touch listeners, etc.
 end
  
 -- "scene:show()"
