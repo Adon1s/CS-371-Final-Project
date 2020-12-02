@@ -17,19 +17,22 @@ function scene:create( event )
 
 local sceneGroup = self.view
 
-local button1 = display.newRect( 300, 700, 100, 75)
-button1:setFillColor(0,1,0)
-local buttontext1 = display.newText( "Start Game", 300, 700, native.systemFont, 16 )
-sceneGroup:insert(button1)
-sceneGroup:insert(buttontext1)
-button1:addEventListener( "tap", gameScene )
+local background = display.newImageRect("logo3.png", 1334, 750)
+background.x = display.contentCenterX
+background.y = display.contentCenterY
+sceneGroup:insert(background)
 
-local button2 = display.newRect( 500, 700, 100, 75)
-button2:setFillColor(0,1,0)
-local buttontext2 = display.newText( "How to Play", 500, 700, native.systemFont, 16 )
-sceneGroup:insert(button2)
-sceneGroup:insert(buttontext2)
-button2:addEventListener( "tap", helpScene )
+local start = display.newImageRect("start-up.png", 256, 256)
+start.x = 300
+start.y = 600
+sceneGroup:insert(start)
+start:addEventListener("tap", gameScene)
+
+local help = display.newImageRect("instructions.png", 256, 256)
+help.x = 1000
+help.y = 600
+sceneGroup:insert(help)
+help:addEventListener("tap", helpScene)
 
 end
  
