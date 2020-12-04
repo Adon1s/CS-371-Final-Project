@@ -41,9 +41,9 @@ local enemy_opt = {
     }
 }
 
-local pillar_opt = {
+local column_opt = {
     frames = {
-        {x = 51, y = 0, width = 49, height = 124}, -- frame 1
+        {x = 51, y = 0, width = 43, height = 124}, -- frame 1
     }
 }
 
@@ -61,6 +61,7 @@ local health_opt = {
 local ship_sheet = graphics.newImageSheet("ships_transparent.png", ship_opt)
 local enemy_sheet = graphics.newImageSheet("ships_transparent.png", enemy_opt)
 local health_sheet = graphics.newImageSheet("healthbar.png", health_opt)
+local column_sheet = graphics.newImageSheet("column.png", column_opt)
 
 local ship_sequenceData = {
    {name = "walking", frames = {1}, time = 800, loopCount = 0}
@@ -72,6 +73,10 @@ local enemy_sequenceData = {
 
 local health_sequenceData = {
     {name = "health_decrease", frames = {1,2,3,4,5,6}, time = 800, loopCount = 0}
+}
+
+local column_sequenceData = {
+    {name = "column", frames = {1}, time = 500, loopCount = 0}
 }
 
 local player = display.newSprite(ship_sheet, ship_sequenceData) --initialize ship sprite
@@ -206,14 +211,14 @@ local function playerHealth(event)
     end
     if(event.other.tag == "topColumn" or event.other.tag == "bottomColumn") then
 
-       event.other:removeSelf(); 
-                    event.other=nil;
-					audio.play(soundTable['explodeSound']);
-                    print("destroyed")
-                    timer.cancel(enemyShootTimer);
-                    timer.cancel(createEnemyTimer);
-                    timer.cancel(addColumnTimer);
-                    timer.cancel(moveColumnTimer);
+       --event.other:removeSelf(); 
+                    --event.other=nil;
+					--audio.play(soundTable['explodeSound']);
+                    --print("destroyed")
+                    --timer.cancel(enemyShootTimer);
+                    --timer.cancel(createEnemyTimer);
+                    --timer.cancel(addColumnTimer);
+                    --timer.cancel(moveColumnTimer);
                     composer.removeScene("scene2");
                     composer.gotoScene("deathScene")
     end
@@ -240,8 +245,9 @@ local function addColumns()
 	
 	height = math.random(display.contentCenterY - 200, display.contentCenterY + 200)
 
-    local topColumn = display.newImageRect('column.png',300,714)
+    local topColumn = display.newSprite(column_sheet, column_sequenceData)
     topColumn.tag = "topColumn"
+    topColumn.scale = 0.5
 	topColumn.anchorX = 0.5
 	topColumn.anchorY = 1
 	topColumn.x = display.contentWidth + 100
@@ -249,8 +255,9 @@ local function addColumns()
 	physics.addBody(topColumn, "static", {density=1, bounce=0.1, friction=.2, isSensor= true})
 	elements:insert(topColumn)
 	
-    local bottomColumn = display.newImageRect('column.png',300,714)
+    local bottomColumn = display.newSprite(column_sheet, column_sequenceData)
     bottomColumn.tag = "bottomColumn"
+    bottomColumn.scale = 0.5
 	bottomColumn.anchorX = 0.5
 	bottomColumn.anchorY = 0
 	bottomColumn.x = display.contentWidth + 100
